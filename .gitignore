@@ -3,3 +3,7 @@
 ################################################################################
 
 /.vs
+/VendingMachine/bin/Debug/netcoreapp2.0
+/VendingMachine/obj
+/VendingMachineTest/bin/Debug/netcoreapp2.0
+/VendingMachineTest/obj
