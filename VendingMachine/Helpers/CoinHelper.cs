@@ -7,11 +7,11 @@ namespace VendingMachine.Helpers
 {
 	public static class CoinHelper
 	{
-		public static double GetCoinValue(string coinName)
+		public static decimal GetCoinValue(string coinName)
 		{
 			if (IsValidCoin(coinName))
 			{
-				return (int)Enum.Parse(typeof(AcceptedCoinEnum), coinName) / 100.0;
+				return (int)Enum.Parse(typeof(AcceptedCoinEnum), coinName) / 100.0M;
 			}
 			else
 			{

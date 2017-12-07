@@ -10,11 +10,12 @@ namespace VendingMachine.Types
         {
         }
 
-        public ProductType(int buttonNumber, string name, double price)
+        public ProductType(int buttonNumber, string name, decimal price, int quantity)
         {
             _buttonNumber = buttonNumber;
             _name = name;
             _price = price;
+            _quantity = quantity;
         }
 
         private int _buttonNumber;
@@ -31,12 +32,18 @@ namespace VendingMachine.Types
             set { _name = value; }
         }
 
-        private double _price;
-        public double Price
+        private decimal _price;
+        public decimal Price
         {
             get { return _price; }
             set { _price = value; }
         }
 
+        private int _quantity;
+        public int Quantity
+        {
+            get { return _quantity; }
+            set { _quantity = value; }
+        }
     }
 }

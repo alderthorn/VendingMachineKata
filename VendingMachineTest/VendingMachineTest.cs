@@ -3,6 +3,8 @@ using NUnit;
 using NUnit.Framework;
 using VendingMachine.ViewModels;
 using System.Linq;
+using VendingMachine.Types;
+using System.Collections.Generic;
 
 namespace ViewModel
 {
@@ -207,6 +209,116 @@ namespace ViewModel
             Assert.AreEqual(NumberOfQuarters, 3);
             Assert.AreEqual(NumberOfDimes, 2);
             Assert.AreEqual(NumberOfNickles, 1);
+        }
+
+        [Test]
+        public void ItemSelectedByCustomerIsSoldOutDisplaySoldOutTest()
+        {
+            var soda = new ProductType(1, "Soda", 1.00M, 3);
+            var chips = new ProductType(2, "Chips", .5M, 2);
+            var candy = new ProductType(3, "Candy", .65M, 5);
+
+            VendingMachine = new VendingMachineViewModel(new List<ProductType>() { soda, chips, candy }, 50, 50, 50);
+            var display = VendingMachine.CheckDisplay();
+
+            VendingMachine.ButtonPressed(2);
+            VendingMachine.InsertCoin("Quarter");
+            VendingMachine.InsertCoin("Quarter");
+
+            VendingMachine.ButtonPressed(2);
+            VendingMachine.InsertCoin("Quarter");
+            VendingMachine.InsertCoin("Quarter");
+
+            // chips should now be sold out
+            VendingMachine.ButtonPressed(2);
+            display = VendingMachine.CheckDisplay();
+            Assert.AreEqual(display, "SOLD OUT");
+        }
+
+        [Test]
+        public void DisplayResetsToInsertCoinOnDisplayCheckAfterSoldOutIfNoMoneyIsInMachineTest()
+        {
+            var soda = new ProductType(1, "Soda", 1.00M, 3);
+            var chips = new ProductType(2, "Chips", .5M, 2);
+            var candy = new ProductType(3, "Candy", .65M, 5);
+
+            VendingMachine = new VendingMachineViewModel(new List<ProductType>() { soda, chips, candy }, 50, 50, 50);
+            var display = VendingMachine.CheckDisplay();
+
+            VendingMachine.ButtonPressed(2);
+            VendingMachine.InsertCoin("Quarter");
+            VendingMachine.InsertCoin("Quarter");
+
+            VendingMachine.ButtonPressed(2);
+            VendingMachine.InsertCoin("Quarter");
+            VendingMachine.InsertCoin("Quarter");
+
+            // chips should now be sold out
+            VendingMachine.ButtonPressed(2);
+            display = VendingMachine.CheckDisplay();
+            Assert.AreEqual(display, "SOLD OUT");
+            display = VendingMachine.CheckDisplay();
+            Assert.AreEqual(display, INSERT_COIN);
+        }
+
+        [Test]
+        public void DisplayResetsToCeditAmountOnDisplayCheckAfterSoldOutIfMoneyIsInMachineTest()
+        {
+            var soda = new ProductType(1, "Soda", 1.00M, 3);
+            var chips = new ProductType(2, "Chips", .5M, 2);
+            var candy = new ProductType(3, "Candy", .65M, 5);
+
+            VendingMachine = new VendingMachineViewModel(new List<ProductType>() { soda, chips, candy }, 50, 50, 50);
+            var display = VendingMachine.CheckDisplay();
+
+            VendingMachine.ButtonPressed(2);
+            VendingMachine.InsertCoin("Quarter");
+            VendingMachine.InsertCoin("Quarter");
+
+            VendingMachine.ButtonPressed(2);
+            VendingMachine.InsertCoin("Quarter");
+            VendingMachine.InsertCoin("Quarter");
+
+            // chips should now be sold out
+            VendingMachine.InsertCoin("Quarter");
+            VendingMachine.InsertCoin("Quarter");
+            VendingMachine.ButtonPressed(2);
+            display = VendingMachine.CheckDisplay();
+            Assert.AreEqual(display, "SOLD OUT");
+            display = VendingMachine.CheckDisplay();
+            Assert.AreEqual(display, "$0.50");
+        }
+
+        [Test]
+        public void DisplayExactChangeOnlyWHenMachineIsLowOnChangeToReturnOnStartTest()
+        {
+            var soda = new ProductType(1, "Soda", 1.00M, 3);
+            var chips = new ProductType(2, "Chips", .5M, 2);
+            var candy = new ProductType(3, "Candy", .65M, 5);
+
+            VendingMachine = new VendingMachineViewModel(new List<ProductType>() { soda, chips, candy }, 1, 3, 5);
+
+            var display = VendingMachine.CheckDisplay();
+
+            Assert.AreEqual(display, "EXACT CHANGE ONLY");
+        }
+
+        [Test]
+        public void DisplayExactChangeOnlyWHenMachineIsLowOnChangeToReturnAfterItemPurchaseTest()
+        {
+            var soda = new ProductType(1, "Soda", 1.00M, 3);
+            var chips = new ProductType(2, "Chips", .5M, 2);
+            var candy = new ProductType(3, "Candy", .65M, 5);
+
+            VendingMachine = new VendingMachineViewModel(new List<ProductType>() { soda, chips, candy }, 3, 3, 3);
+            VendingMachine.InsertCoin("Quarter");
+            VendingMachine.InsertCoin("Quarter");
+            VendingMachine.InsertCoin("Quarter");
+            VendingMachine.ButtonPressed(3);
+
+            var display = VendingMachine.CheckDisplay();
+
+            Assert.AreEqual(display, "EXACT CHANGE ONLY");
         }
     }
 }
